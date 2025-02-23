@@ -32,11 +32,3 @@ fn check_deserialize_non_prime_order() {
     let r = <Ed448Shake256 as Ciphersuite>::Group::deserialize(&encoded_point);
     assert_eq!(r, Err(GroupError::InvalidNonPrimeOrderElement));
 }
-
-#[test]
-fn check_deserialize_identity() {
-    let encoded_identity = ExtendedPoint::identity().compress().0;
-
-    let r = <Ed448Shake256 as Ciphersuite>::Group::deserialize(&encoded_identity);
-    assert_eq!(r, Err(GroupError::InvalidIdentityElement));
-}

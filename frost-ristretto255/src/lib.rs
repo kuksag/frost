@@ -102,9 +102,6 @@ impl Group for RistrettoGroup {
     }
 
     fn serialize(element: &Self::Element) -> Result<Self::Serialization, GroupError> {
-        if *element == Self::identity() {
-            return Err(GroupError::InvalidIdentityElement);
-        }
         Ok(element.compress().to_bytes())
     }
 
@@ -114,11 +111,7 @@ impl Group for RistrettoGroup {
             .decompress()
         {
             Some(point) => {
-                if point == Self::identity() {
-                    Err(GroupError::InvalidIdentityElement)
-                } else {
-                    Ok(point)
-                }
+                Ok(point)
             }
             None => Err(GroupError::MalformedElement),
         }

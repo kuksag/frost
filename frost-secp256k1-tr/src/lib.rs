@@ -127,9 +127,6 @@ impl Group for Secp256K1Group {
     }
 
     fn serialize(element: &Self::Element) -> Result<Self::Serialization, GroupError> {
-        if *element == Self::identity() {
-            return Err(GroupError::InvalidIdentityElement);
-        }
         let mut fixed_serialized = [0; 33];
         let serialized_point = element.to_affine().to_encoded_point(true);
         let serialized = serialized_point.as_bytes();
@@ -143,14 +140,7 @@ impl Group for Secp256K1Group {
 
         match Option::<AffinePoint>::from(AffinePoint::from_encoded_point(&encoded_point)) {
             Some(point) => {
-                if point.is_identity().into() {
-                    // This is actually impossible since the identity is encoded a a single byte
-                    // which will never happen since we receive a 33-byte buffer.
-                    // We leave the check for consistency.
-                    Err(GroupError::InvalidIdentityElement)
-                } else {
-                    Ok(ProjectivePoint::from(point))
-                }
+                Ok(ProjectivePoint::from(point))
             }
             None => Err(GroupError::MalformedElement),
         }

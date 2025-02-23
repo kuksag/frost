@@ -31,6 +31,7 @@ use super::compute_lagrange_coefficient;
 pub mod dkg;
 pub mod refresh;
 pub mod repairable;
+pub mod keyshare;
 
 /// Sum the commitments from all participants in a distributed key generation
 /// run into a single group commitment.
