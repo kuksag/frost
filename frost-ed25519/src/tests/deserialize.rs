@@ -12,10 +12,3 @@ fn check_deserialize_non_prime_order() {
     assert_eq!(r, Err(GroupError::InvalidNonPrimeOrderElement));
 }
 
-#[test]
-fn check_deserialize_identity() {
-    let encoded_identity = EdwardsPoint::identity().compress().to_bytes();
-
-    let r = <Ed25519Sha512 as Ciphersuite>::Group::deserialize(&encoded_identity);
-    assert_eq!(r, Err(GroupError::InvalidIdentityElement));
-}

@@ -103,9 +103,6 @@ impl Group for Ed448Group {
     }
 
     fn serialize(element: &Self::Element) -> Result<Self::Serialization, GroupError> {
-        if *element == Self::identity() {
-            return Err(GroupError::InvalidIdentityElement);
-        }
         Ok(element.compress().0)
     }
 
@@ -113,9 +110,7 @@ impl Group for Ed448Group {
         let compressed = CompressedEdwardsY(*buf);
         match compressed.decompress() {
             Some(point) => {
-                if point == Self::identity() {
-                    Err(GroupError::InvalidIdentityElement)
-                } else if point.is_torsion_free() {
+                if point.is_torsion_free() {
                     // decompress() does not check for canonicality, so we
                     // check by recompressing and comparing
                     if point.compress().0 != compressed.0 {

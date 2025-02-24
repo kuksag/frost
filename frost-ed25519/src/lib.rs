@@ -105,9 +105,6 @@ impl Group for Ed25519Group {
     }
 
     fn serialize(element: &Self::Element) -> Result<Self::Serialization, GroupError> {
-        if *element == Self::identity() {
-            return Err(GroupError::InvalidIdentityElement);
-        }
         Ok(element.compress().to_bytes())
     }
 
@@ -117,9 +114,7 @@ impl Group for Ed25519Group {
             .decompress()
         {
             Some(point) => {
-                if point == Self::identity() {
-                    Err(GroupError::InvalidIdentityElement)
-                } else if point.is_torsion_free() {
+                if point.is_torsion_free() {
                     // At this point we should reject points which were not
                     // encoded canonically (i.e. Y coordinate >= p).
                     // However, we don't allow non-prime order elements,
