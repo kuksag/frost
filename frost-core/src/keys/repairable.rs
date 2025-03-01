@@ -24,7 +24,8 @@ use super::{generate_coefficients, SecretShare, SigningShare, VerifiableSecretSh
 /// Returns a BTreeMap mapping which value should be sent to which participant.
 pub fn repair_share_step_1<C: Ciphersuite, R: RngCore + CryptoRng>(
     helpers: &[Identifier<C>],
-    share_i: &SecretShare<C>,
+    identifier_i: Identifier<C>,
+    share_i: &SigningShare<C>,
     rng: &mut R,
     participant: Identifier<C>,
 ) -> Result<BTreeMap<Identifier<C>, Scalar<C>>, Error<C>> {
@@ -42,7 +43,7 @@ pub fn repair_share_step_1<C: Ciphersuite, R: RngCore + CryptoRng>(
 
     let rand_val: Vec<Scalar<C>> = generate_coefficients::<C, R>(helpers.len() - 1, rng);
 
-    compute_last_random_value(&xset, share_i, &rand_val, participant)
+    compute_last_random_value(&xset, identifier_i, share_i, &rand_val, participant)
 }
 
 /// Compute the last delta value given the (generated uniformly at random) remaining ones
@@ -51,14 +52,15 @@ pub fn repair_share_step_1<C: Ciphersuite, R: RngCore + CryptoRng>(
 /// Returns a BTreeMap mapping which value should be sent to which participant.
 fn compute_last_random_value<C: Ciphersuite>(
     helpers: &BTreeSet<Identifier<C>>,
-    share_i: &SecretShare<C>,
+    identifier_i: Identifier<C>,
+    share_i: &SigningShare<C>,
     random_values: &Vec<Scalar<C>>,
     participant: Identifier<C>,
 ) -> Result<BTreeMap<Identifier<C>, Scalar<C>>, Error<C>> {
     // Calculate Lagrange Coefficient for helper_i
-    let zeta_i = compute_lagrange_coefficient(helpers, Some(participant), share_i.identifier)?;
+    let zeta_i = compute_lagrange_coefficient(helpers, Some(participant), identifier_i)?;
 
-    let lhs = zeta_i * share_i.signing_share.to_scalar();
+    let lhs = zeta_i * share_i.to_scalar();
 
     let mut out: BTreeMap<Identifier<C>, Scalar<C>> = helpers
         .iter()

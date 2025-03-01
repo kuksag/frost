@@ -54,11 +54,11 @@ pub fn check_rts<C: Ciphersuite, R: RngCore + CryptoRng>(mut rng: R) {
     // Each helper generates random values for each helper
 
     let helper_1_deltas =
-        repair_share_step_1(&helpers, helper_1, &mut rng, participant.identifier).unwrap();
+        repair_share_step_1(&helpers, helper_1.identifier, helper_1.signing_share(), &mut rng, participant.identifier).unwrap();
     let helper_4_deltas =
-        repair_share_step_1(&helpers, helper_4, &mut rng, participant.identifier).unwrap();
+        repair_share_step_1(&helpers, helper_4.identifier, helper_4.signing_share(), &mut rng, participant.identifier).unwrap();
     let helper_5_deltas =
-        repair_share_step_1(&helpers, helper_5, &mut rng, participant.identifier).unwrap();
+        repair_share_step_1(&helpers, helper_5.identifier, helper_5.signing_share(), &mut rng, participant.identifier).unwrap();
 
     // Each helper calculates their sigma from the random values received from the other helpers
 
@@ -128,7 +128,7 @@ pub fn check_repair_share_step_1<C: Ciphersuite, R: RngCore + CryptoRng>(mut rng
     ];
 
     // Generate deltas for helper 4
-    let deltas = repair_share_step_1(&helpers, helper_4, &mut rng, participant.identifier).unwrap();
+    let deltas = repair_share_step_1(&helpers, helper_4.identifier, helper_4.signing_share(), &mut rng, participant.identifier).unwrap();
 
     let lagrange_coefficient = compute_lagrange_coefficient(
         &helpers.iter().cloned().collect(),
@@ -232,7 +232,8 @@ pub fn check_repair_share_step_1_fails_with_invalid_min_signers<
 
     let out = repair_share_step_1(
         &[helper],
-        &shares[&helper],
+        shares[&helper].identifier,
+        &shares[&helper].signing_share,
         &mut rng,
         Identifier::try_from(2).unwrap(),
     );
