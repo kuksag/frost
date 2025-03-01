@@ -27,7 +27,7 @@ pub fn repair_share_step_1<C: Ciphersuite, R: RngCore + CryptoRng>(
     rng: &mut R,
     participant: Identifier,
 ) -> Result<BTreeMap<Identifier, Scalar>, Error> {
-    frost::keys::repairable::repair_share_step_1(helpers, share_i, rng, participant)
+    frost::keys::repairable::repair_share_step_1(helpers, *share_i.identifier(), share_i.signing_share(), rng, participant)
 }
 
 /// Step 2 of RTS.
